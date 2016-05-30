@@ -12,6 +12,18 @@
 
 @interface NSObject (Parser)
 
+/**
+ *  获取对象属性 或者类属性列表
+ *
+ *  @return <#return value description#>
+ */
+-(NSArray *)objectPropertyList;
+
+/**
+ *  将对象转化成字典
+ *
+ *  @return <#return value description#>
+ */
 -(NSDictionary *)toDictionary;
 
 /**

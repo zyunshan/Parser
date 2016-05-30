@@ -21,8 +21,47 @@
     return nil;
 }
 
+-(NSArray *)objectPropertyList{
+    if (self.superclass == nil) {//当前类是NSObject 也就是基类
+        return @[];
+    }
+    //获取属性列表
+    unsigned int outCount = 0;
+    objc_property_t *properties = class_copyPropertyList(self.class, &outCount);
+    NSMutableArray *data = [[NSMutableArray alloc]init];
+    for (const objc_property_t *p=properties; p < properties+outCount; p++) {
+        objc_property_t property = *p;
+        const char *name = property_getName(property);
+        [data addObject:[NSString stringWithUTF8String:name]];
+    }
+    free(properties);
+    
+    //获取父类属性列表
+    if (![self.superclass conformsToProtocol:@protocol(NSCoding)] && self.superclass) {
+        id model = [[self.superclass alloc]init];
+        [data addObjectsFromArray:[model objectPropertyList]];
+    }
+    return data;
+}
+
 -(NSDictionary *)toDictionary{
-    return nil;
+    NSArray *array = [self objectPropertyList];
+    if (!array) {
+        return @{};
+    }
+    NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+    for (NSString *property in array) {
+        if (![self valueForKey:property]) {
+            [dic setObject:@"" forKey:property];
+        }else{
+            if ([[self valueForKey:property]conformsToProtocol:@protocol(NSCoding) ]) {
+                [dic setObject:[self valueForKey:property] forKey:property];
+            }else{
+                [dic setObject:[[self valueForKey:property] toDictionary] forKey:property];
+            }
+        }
+    }
+    return dic;
 }
 
 -(id)parserWithClass:(Class)clss{
