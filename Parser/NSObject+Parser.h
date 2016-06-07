@@ -27,6 +27,15 @@
 -(NSDictionary *)toDictionary;
 
 /**
+ *  用字典初始化
+ *
+ *  @param dict <#dict description#>
+ *
+ *  @return <#return value description#>
+ */
+-(instancetype)initWithDictionary:(NSDictionary *)dict;
+
+/**
  *  将字典转化成对象
  *
  *  @param clss 对象类型
